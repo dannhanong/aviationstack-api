@@ -48,19 +48,19 @@ const ShowFlight: React.FC<FlightProps> = ({ flight, manaInfo, loading }) => {
     const convertToDesiredFormat = (isoString: string) => {
         const date = moment(isoString);
         // date.set({ hour: 9, minute: 20, second: 0, millisecond: 0 });
-        return date.utc().format('YYYY-MM-DDTHH:mm:ssZ')+'';
+        return date.utc().format('YYYY-MM-DDTHH:mm:ssZ') + '';
     };
 
     const calculate2Minutes = (isoString1: string, isoString2: string) => {
         const endTime = moment.utc(isoString1);
-        const startTime = moment.utc(isoString2);        
+        const startTime = moment.utc(isoString2);
         const totalMinutes = endTime.diff(startTime, 'minutes');
         return totalMinutes;
     };
 
     const getTime = (s: number, t1: string, t2: string, s1: number): { hours: number, minutes: number } => {
-        const v: number = s*1000 / calculate2Minutes(t1, t2);
-        const totalMinutes = s1*1000 / v;
+        const v: number = s * 1000 / calculate2Minutes(t1, t2);
+        const totalMinutes = s1 * 1000 / v;
         const hours = Math.floor(totalMinutes / 60);
         const minutes = Math.floor((totalMinutes % 60));
         return { hours, minutes };
@@ -71,7 +71,7 @@ const ShowFlight: React.FC<FlightProps> = ({ flight, manaInfo, loading }) => {
         const flightNumber = flight.flight?.number ?? '';
         const flightStatus = flight.flight_status ?? '';
 
-        if (isShow && flightNumber && flightStatus==='active') {
+        if (isShow && flightNumber && flightStatus === 'active') {
             fetchFlightDetail(flightNumber, flightStatus);
             intervalId = setInterval(() => {
                 fetchFlightDetail(flightNumber, flightStatus);
@@ -101,7 +101,7 @@ const ShowFlight: React.FC<FlightProps> = ({ flight, manaInfo, loading }) => {
         const minutes = Math.abs(totalMinutes % 60);
         return { hours, minutes, totalMinutes: Math.abs(totalMinutes) };
     };
-    
+
     return (
         <div className="max-w-6xl mx-auto bg-white p-20 shadow-lg my-3">
             <div className="flex justify-between">
@@ -124,13 +124,17 @@ const ShowFlight: React.FC<FlightProps> = ({ flight, manaInfo, loading }) => {
                             (flight.flight_status === 'cancelled') &&
                             <div className="text-red-800 font-bold mt-4">Flight is cancelled</div>
                         }
-                        <div className='text-left text-green-600'>
-                            {
-                                flight.arrival?.actual && flightInfo
-                                ? `${flightInfo && getTime(flightInfo.far, flight.arrival.actual, flight.departure?.actual ?? '', flightInfo.dtoGoNumber).hours}h ${flightInfo && getTime(flightInfo.far, flight.arrival.actual, flight.departure?.actual ?? '', flightInfo.dtoGoNumber).minutes}m remaining`
-                                : `${flightInfo && getTime(flightInfo.far, flight.arrival?.estimated ?? '', flight.departure?.actual ?? '', flightInfo.dtoGoNumber).hours}h ${flightInfo && getTime(flightInfo.far, flight.arrival?.estimated ?? '', flight.departure?.actual ?? '', flightInfo.dtoGoNumber).minutes}m remaining`
-                            }
-                        </div>
+                        {
+                            flightInfo && (
+                                <div className='text-left text-green-600'>
+                                    {
+                                        flight.arrival?.actual
+                                            ? `${flightInfo && getTime(flightInfo.far, flight.arrival.actual, flight.departure?.actual ?? '', flightInfo.dtoGoNumber).hours}h ${flightInfo && getTime(flightInfo.far, flight.arrival.actual, flight.departure?.actual ?? '', flightInfo.dtoGoNumber).minutes}m remaining`
+                                            : `${flightInfo && getTime(flightInfo.far, flight.arrival?.estimated ?? '', flight.departure?.actual ?? '', flightInfo.dtoGoNumber).hours}h ${flightInfo && getTime(flightInfo.far, flight.arrival?.estimated ?? '', flight.departure?.actual ?? '', flightInfo.dtoGoNumber).minutes}m remaining`
+                                    }
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
                 <div>
@@ -185,8 +189,8 @@ const ShowFlight: React.FC<FlightProps> = ({ flight, manaInfo, loading }) => {
                     <div>
                         <span className="text-green-600">
                             ({flight.arrival?.actual || differenceInMinutes(parseISO(flight.arrival?.actual ?? ''), parseISO(flight.arrival?.estimated ?? '')) > 0
-                            ? differenceInMinutes(parseISO(flight.arrival?.actual ?? ''), parseISO(flight.arrival?.estimated ?? '') + ' minutes early') 
-                            : 'on schedule'})
+                                ? differenceInMinutes(parseISO(flight.arrival?.actual ?? ''), parseISO(flight.arrival?.estimated ?? '') + ' minutes early')
+                                : 'on schedule'})
                         </span>
                         <span className="font-bold">{flight.arrival?.actual ? flight.arrival.actual.slice(11) : flight.arrival?.estimated?.slice(11)}</span>
                     </div>
